@@ -2,7 +2,7 @@
 
 const HomePage = () => {
   return (
-    <div>Hello</div>
+    <div></div>
   )
 }
 
