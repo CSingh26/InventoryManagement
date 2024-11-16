@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const cookie = require('cookie-parser')
 const prisma = require('./config/primsaClient')
+const authRoutes = require('./routes/authRoutes')
 
 const app = express()
 
@@ -16,6 +17,8 @@ app.use(cors({
 }))
 app.use(bodyParser.json())
 app.use(cookie())
+
+app.use('/api/auth', authRoutes)
 
 prisma.$connect()
     .then(() => {
