@@ -1,35 +1,71 @@
 "use client"
 
 import React, { useState } from "react"
+import { useRouter } from "next/navigation"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const SignUpPage: React.FC = () => {
     const[username, setUsername] = useState('')
     const[password, setPassword] = useState('')
     const[confirmPassword, setConfirmPassword] = useState('')
     const[email, setEmail] = useState('')
-    const[error, setError] = useState('')
+    const router = useRouter()
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
         if (!username || !password || !confirmPassword || !email) {
-            setError('Please fill in all fields!')
+            toast.error("Please fill in all the fields!", {
+                position: "top-center"
+            })
             return
         }
 
-        setError('')
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match!", {
+                position: "top-center"
+            })
+            return
+        }
 
-        console.log('SignUp Submitted!', {
-            username,
-            email,
-            password
-        })
+        try {
+            const response = await fetch("http://localhost:7565/api/auth/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password
+                })
+            })
+
+            const data = await response.json()
+
+            if (response.ok) {
+                toast.success("Signup successfull!", {
+                    position: "bottom-right"
+                })
+                setTimeout(() => router.push("/login"), 3000)
+            } else {
+                toast.error(data.error || "Signup failed!", {
+                    position: "top-center"
+                })
+            }
+        } catch (e) {
+            console.error(e)
+            toast.error("Something went wrong. Please try again!", {
+                position: "top-center"
+            })
+        }
     }
     return (
         <div className="flex-justify-center items-center h-screen pt-60">
-            <form onSubmit={handleSubmit}>
+            <ToastContainer />
+            <form onSubmit={handleSubmit} className="w-1/3">
             <h3 className="text-2xl font-bold text-center">Signup</h3>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
 
             <div className="mb-4">
                     <label htmlFor="username" className="block text-gray-700">Username</label>
@@ -79,7 +115,7 @@ const SignUpPage: React.FC = () => {
                     type="submit"
                     className="w-full bg-purple-500 text-white py-2 rounded hover:bg-purple-600"
                 >
-                    Login
+                    Signup
                 </button>
             </form>
         </div>

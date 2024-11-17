@@ -1,5 +1,5 @@
 const enc = require('bcryptjs')
-const prisma = require('../config/primsaClient')
+const prisma = require('../config/prismaClient')
 const jwt = require('jsonwebtoken')
 const { PrismaClient } = require('@prisma/client')
 
@@ -39,7 +39,8 @@ exports.signup = async (req, res) => {
         })
 
         res.status(201).json({
-            message: 'User created successfully'
+            message: 'User created successfully',
+            e
         })
     } catch (e) {
         console.log(e)
@@ -84,7 +85,8 @@ exports.login = async (req, res) => {
     } catch (e) {
         console.log(e)
         res.status(500).json({
-            error: 'Error during login'
+            error: 'Error during login',
+            e
         })
     }
 }
