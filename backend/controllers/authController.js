@@ -55,7 +55,8 @@ exports.login = async (req, res) => {
     const { username, password } = req.body
     try {
         const user = await prisma.user.findUnique({
-            where: { username }
+            where: { username },
+            include: { profile: true }
         })
 
         if (!user) {
@@ -80,7 +81,13 @@ exports.login = async (req, res) => {
 
         res.status(200).json({
             message: 'Login Successfull',
-            token
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                profile: user.profile
+            }
         })
     } catch (e) {
         console.log(e)

@@ -2,8 +2,10 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const cookie = require('cookie-parser')
-const prisma = require('./config/primsaClient')
+const prisma = require('./config/prismaClient')
+
 const authRoutes = require('./routes/authRoutes')
+const profileRoutes = require("./routes/profileRoutes")
 
 const app = express()
 
@@ -19,6 +21,7 @@ app.use(bodyParser.json())
 app.use(cookie())
 
 app.use('/api/auth', authRoutes)
+app.use("/api/profile", profileRoutes)
 
 prisma.$connect()
     .then(() => {

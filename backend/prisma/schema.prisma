@@ -12,4 +12,16 @@ model User {
   email String @unique
   username String @unique
   password String
+
+  profile Profile? @relation("UserProfile")
+}
+
+model Profile {
+  id Int   @id @default(autoincrement())
+  userId Int @unique
+  name String
+  companyName String
+  profilePicture String?
+
+  user User @relation("UserProfile", fields: [userId], references: [id])
 }

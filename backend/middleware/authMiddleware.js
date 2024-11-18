@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 const authToken = (req, res, next) => {
-    const token = req.header('Authorization')?.split('')[1]
+    const token = req.header('Authorization')?.split(' ')[1]
 
     if (!token) {
         return res.status(401).json({
@@ -15,7 +15,8 @@ const authToken = (req, res, next) => {
         next()
     } catch (e) {
         return res.status(403).json({ 
-            error: 'Invalid token.' 
+            error: 'Invalid token.',
+            e
         })
     }
 }

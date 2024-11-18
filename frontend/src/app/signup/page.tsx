@@ -48,7 +48,7 @@ const SignUpPage: React.FC = () => {
                 toast.success("Signup successfull!", {
                     position: "bottom-right"
                 })
-                setTimeout(() => router.push("/login"), 3000)
+                setTimeout(() => router.push("/profile"), 3000)
             } else {
                 toast.error(data.error || "Signup failed!", {
                     position: "top-center"
