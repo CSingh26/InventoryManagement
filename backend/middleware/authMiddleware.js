@@ -16,7 +16,7 @@ const authToken = (req, res, next) => {
     } catch (e) {
         return res.status(403).json({ 
             error: 'Invalid token.',
-            e
+            details: e.message
         })
     }
 }
