@@ -21,7 +21,7 @@ model Profile {
   userId Int @unique
   name String
   companyName String
-  profilePicture String?
+  profilePicture Bytes?
 
   user User @relation("UserProfile", fields: [userId], references: [id])
 }

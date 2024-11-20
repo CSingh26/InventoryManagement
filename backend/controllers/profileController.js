@@ -1,11 +1,16 @@
 const prisma = require("../config/prismaClient")
 
+const sharp = require("sharp")
+
 // create profile
 exports.createProfile = async (req, res) => {
-    const { name, companyName, profilePicture } = req.body
     const userId = req.userId
 
     try {
+        console.log("Body:", req.body)
+        console.log("File:", req.file)
+
+        const { Iname, IcompanyName } = req.body
         // Ensure the user exists
         const user = await prisma.user.findUnique({
             where: { id: userId }
@@ -17,12 +22,33 @@ exports.createProfile = async (req, res) => {
             })
         }
 
+        const existingProfile = await prisma.profile.findUnique({
+            where: { userId },
+        })
+        
+        if (existingProfile) {
+            return res.status(400).json({
+                error: "Profile already exists",
+            })
+        }
+
+        let compressedImageBuffer = null
+
+        if (req.file) {
+            compressedImageBuffer = await sharp(req.file.buffer)
+                .resize(300)
+                .jpeg({
+                    quality: 75
+                })
+                .toBuffer()
+        }
+
         const newProfile = await prisma.profile.create({
             data: {
                 userId,
-                name,
-                companyName,
-                profilePicture
+                name: Iname,
+                companyName: IcompanyName,
+                profilePicture: compressedImageBuffer
             }
         })
 
