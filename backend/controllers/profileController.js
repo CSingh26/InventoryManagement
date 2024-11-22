@@ -60,7 +60,7 @@ exports.createProfile = async (req, res) => {
         console.error(e)
         res.status(500).json({
             error: "Failed to create profile.",
-            e
+            details: e.message
         })
     }
 }
