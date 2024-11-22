@@ -38,14 +38,21 @@ exports.signup = async (req, res) => {
             }
         })
 
+        const token = jwt.sign({
+            userId: newUser.id
+        }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        })
+
         res.status(201).json({
             message: 'User created successfully',
-            e
+            token: token
         })
     } catch (e) {
         console.log(e)
         res.status(500).json({
-            error: 'Error during signup'
+            error: 'Error during signup',
+            e
         })
     }
 }

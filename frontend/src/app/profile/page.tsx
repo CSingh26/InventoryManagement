@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
@@ -8,6 +9,7 @@ const ProfilePage: React.FC = () => {
     const [name, setName] = useState('')
     const[companyName, setCompnayName] = useState('')
     const [profilePicture, setProfilePicture] = useState<File | null>(null)
+    const router = useRouter()
 
     const handleSubmit = async (e:React.FormEvent) => {
         e.preventDefault()
@@ -21,14 +23,25 @@ const ProfilePage: React.FC = () => {
 
         try {
             const formData = new FormData()
-            formData.append("name", name)
-            formData.append("companyName", companyName)
+            const token = localStorage.getItem("token")
+
+            if (!token) {
+                toast.error("Authorization token is missing. Please log in again.", {
+                    position: "top-center",
+                })
+                return
+            }
+            formData.append("Iname", name)
+            formData.append("IcompanyName", companyName)
             if (profilePicture) {
-                formData.append("ProfilePicture", profilePicture)
+                formData.append("profilePicture", profilePicture)
             }
 
             const response = await fetch("http://localhost:7565/api/profile/create", {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 body: formData
             })
 
@@ -36,6 +49,12 @@ const ProfilePage: React.FC = () => {
                 toast.success("Profile-saved Successfully!", {
                     position: "bottom-right"
                 })
+
+                localStorage.removeItem("token")
+
+                setTimeout(() => {
+                    router.push("/login")
+                }, 1500)
             } else {
                 toast.error("Failed to save profile!", {
                     position: "top-center"
@@ -43,7 +62,7 @@ const ProfilePage: React.FC = () => {
             }
         } catch (err) {
             console.error(err)
-            toast.error("Something went wrong. Please try again!", {
+            toast.error(`Something went wrong. Please try again! ${err}`, {
                 position: "top-center"
             })
         }
@@ -79,7 +98,7 @@ const ProfilePage: React.FC = () => {
                         placeholder="Enter your company name"
                         id="Company Name"
                         value={companyName}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setCompnayName(e.target.value)}
                         className="w-full border rounded mt-1"
                         required
                     />
@@ -92,7 +111,11 @@ const ProfilePage: React.FC = () => {
                         type="file"
                         name="profilePicture"
                         id="profilePicture"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => {
+                            if (e.target.files) {
+                                setProfilePicture(e.target.files[0]);
+                            }
+                        }}
                         className="w-full border rounded mt-1"
                     />
                 </div>
